@@ -32,7 +32,6 @@ Start:
     beq mode 0 Start
     jal homeset
     sbn umblever towerswitch On 1 
-    #sbn rockettankgas rocketname On 1 
     sbn rockettankliquid rocketname On 1 
     sbn rocketcargomed rocketname On 1 
     sbn rocketcargomed rocketname Open 1 
@@ -40,7 +39,6 @@ Start:
     bgt r0 0 Start 
     lbn r0 rocketbattery rocketname Ratio 0 
     blt r0 0.99 Start
-    #lbn r0 rockettankgas rocketname Pressure 3 
     lbn r0 rockettankliquid rocketname VolumeOfLiquid 3
     mul r0 r0 29
     blt r0 fuelset Start 
@@ -49,12 +47,10 @@ Start:
     blt r0 1 Start
     sleep 5 
     l r0 destinationdial Setting
-    beq r0 0 Start #set to zero to hold launch
-    beq r0 1 dial1 # add as many as needed
-
+    beq r0 0 Start 
+    breq r0 1 4 
 j Start
-    dial1:
-        s rocketavionics DestinationCode 24020116 #water
+    s rocketavionics DestinationCode  #enter destination
     j readytolaunch
 
 readytolaunch:
@@ -67,12 +63,12 @@ destinationwait:
     bgt r0 0 destinationwait
 checksystems:
     yield
-    #sbn rockettankgas rocketname On 1 
     sbn rockettankliquid rocketname On 1
     lbn r0 rocketbattery rocketname Ratio 0 
     ble r0 0.30 returnhome 
-    beq mode 3 scan
-    beq mode 4 scan
+    lbn mode dial modedial Setting 3 
+    beq mode 2 checksystems
+    beq mode 0 returnhome
 startmining:
     sbn rocketcargomed rocketname On 1 
     s rocketavionics Mode 2
@@ -94,18 +90,6 @@ nothome:
 sbn umblever towerswitch On 1 
 sleep 5 
 j Start 
-scan:
-    l r0 rocketavionics Mode
-    breq r0 3 5
-    s rocketavionics Mode 4
-    sbn rocketscanners rocketname On 1
-    l r0 rocketavionics Sites
-    bgtz r0 scan
-    s rocketavionics Mode 3
-    sbn rocketscanners rocketname On 1 
-    l r0 rocketavionics Survey
-    j checksystems
-    j scan 
 homeset:
     brdns landingsel 9
     l r13 landingsel On
