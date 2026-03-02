@@ -1,0 +1,82 @@
+#define parts
+define computers -2028449761
+define smallswitch 1773255945
+define flipswitch -236516384
+define monitor 801677497
+define console -651766268
+define logic 2037291645
+define furnace 545937711
+define smallled 1311586884
+define leddisplay -2041948072
+define pump -321403609
+define logicbut 489382030
+
+alias ledname r1
+alias ledpower r2
+start:
+yield
+lbn r0 smallswitch HASH("computer1 switch") Setting 3
+sbn computers HASH("Computer1") On r0 
+lbn r0 smallswitch HASH("computer 2 switch") Setting 3
+sbn computers HASH("Computer2") On r0
+lbn r0 smallswitch HASH("displays") Setting 3
+sb monitor On r0
+sb console On r0
+lbn r0 flipswitch HASH("fuelgasswitch") Setting 3
+sbn logic HASH("fuelgasmix") On r0
+move ledname HASH("fuelgasled")
+seq ledpower r0 1
+beqal r0 0 LEDred
+beqal r0 1 LEDgreen
+lbn r0 flipswitch HASH("nitroxswitch") Setting 3
+sbn logic HASH("nitroxmix") On r0
+move ledname HASH("nitroxled")
+seq ledpower r0 1
+beqal r0 0 LEDred
+beqal r0 1 LEDgreen
+lbn r0 flipswitch HASH("Furnace on/off") Setting 3
+sbn furnace HASH("A Furnace") On r0
+lbn r0 logicbut HASH("openmold") Setting 3
+sbn furnace HASH("A Furnace") Open r0
+lbn r0 smallswitch HASH("siloswitch") Setting 3
+seq ledpower r0 1
+move ledname HASH("silostatus")
+beqal r0 0 LEDred
+beqal r0 1 LEDgreen
+sbn logic HASH("Silos CD") On r0
+sbn logic HASH("SiloIC") On r0
+lbn r0 flipswitch HASH("furnaceautoswitch") Setting 3
+seq ledpower r0 1
+move ledname HASH("furnaceautoled")
+beqal r0 0 LEDred
+beqal r0 1 LEDblue
+sbn logic HASH("Hash IC") On r0
+sbn logic HASH("Furnace IC") On r0
+lbn r0 smallswitch HASH("furnacepower") Setting 3
+move ledname HASH("ICstatus")
+move ledpower 1
+beqal r0 0 LEDblue
+beqal r0 1 LEDgreen
+sbn logic HASH("Manual mode") On r0
+lbn r0 furnace HASH("A Furnace") Pressure 1
+sbn leddisplay HASH("furnacepressure") Mode 14
+mul r0 r0 1000
+sbn leddisplay HASH("furnacepressure") Setting r0
+lbn r0 furnace HASH("A Furnace") Temperature 1
+sub r0 r0 272.15
+sbn leddisplay HASH("Furnacetemp") Mode 4
+sbn leddisplay HASH("Furnacetemp") Setting r0
+j start
+ledlight:
+sbn smallled ledname On ledpower
+move ledpower 0 #clear register
+j ra
+LEDred:
+sbn smallled ledname Color 4
+j ledlight
+LEDgreen:
+sbn smallled ledname Color 2
+j ledlight
+LEDblue:
+sbn smallled ledname Color 0
+j ledlight

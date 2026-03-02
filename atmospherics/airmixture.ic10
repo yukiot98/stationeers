@@ -1,0 +1,74 @@
+#Atmospheric controller
+#check ratio of gases individually
+#activate volume pump from storage tanks if low
+#uses 3 volume pumps and one gas sensor
+#it requires a back pressure valve to vent excess
+#pressure
+#optional cooler and/or heater
+#define vents HASH("StructureActiveVent")
+#define overpress HASH("overpressure")
+
+alias sensor d0
+alias pumpNitrogen d1
+alias pumpOxygen d2
+alias pumpCarbonDioxide d3
+alias ventoverpress d4
+#alias heater d5
+
+define minimumNitrogenRatio 0.1
+define minimumOxygenRatio 0.40
+define minimumCO2Ratio 0.45
+define minimumPressure 80
+define maximumPressure 100
+define minimumTemp 293
+define maximumTemp 298
+start:
+jal checkOverPressure
+jal checkCarbonDioxide
+jal checkOxygen
+jal checkNitrogen
+bdseal ventoverpress checkvent
+#bdseal heater checkHeater
+sleep 1
+j start
+
+checkOverPressure:
+#if over pressure then set punps to zero
+l r0 sensor Pressure
+slt r0 r0 maximumPressure
+mul r0 r0 10
+s pumpNitrogen Setting r0
+s pumpOxygen Setting r0
+s pumpCarbonDioxide Setting r0
+j ra
+
+checkCarbonDioxide:
+#if below minimum pressure then add CO2
+l r0 sensor Pressure
+slt r0 r0 minimumPressure
+l r1 sensor RatioCarbonDioxide
+slt r1 r1 minimumCO2Ratio
+or r0 r0 r1
+s pumpCarbonDioxide On r0
+j ra
+
+checkOxygen:
+l r0 sensor RatioOxygen
+slt r0 r0 minimumOxygenRatio
+s pumpOxygen On r0
+j ra
+
+checkNitrogen:
+l r0 sensor RatioNitrogen
+slt r0 r0 minimumNitrogenRatio
+s pumpNitrogen  On r0
+j ra
+
+checkvent:
+l r3 sensor Pressure
+sgt r3 r3 95
+s ventoverpress On r3
+s ventoverpress Mode 1
+s ventoverpress PressureInternal 30000
+s ventoverpress PressureExternal 70
+j ra

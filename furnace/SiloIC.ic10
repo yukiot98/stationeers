@@ -1,0 +1,121 @@
+define Silo 1155865682 #Update: 6.22
+define dial 1465300791
+define IC 2037291645
+idle:
+move ra 3
+move r3 1 #Rest Amount
+lbn r4 dial HASH("Ingot Dial") Setting 2
+lbn r5 dial HASH("Amount Dial") Setting 2
+lbn r8 -1446063838 HASH("Confirm Button") Setting 2
+yield
+lbn r1 IC HASH("Silos CD") Setting 2
+bltz r1 idle
+mul r3 r3 r5 #non-zero amount
+breq r8 1 2
+j idle
+beqal r4 8 SetupSteel
+beqal r4 9 SetupInvar
+beqal r4 10 SetupSolder
+beqal r4 11 SetupElectrum
+beqal r4 12 SetupConstantan
+beqal r4 13 SetupWaspaloy
+beqal r4 14 SetupInconel
+beqal r4 15 SetupAstroloy
+beqal r4 16 SetupHastelloy
+beqal r4 17 SetupStellite
+sub r4 r4 1
+mul r4 r4 3
+add r4 r4 1
+jr r4
+SetupIron:
+move r0 HASH("Iron Silo")
+j get
+SetupCopper:
+move r0 HASH("Copper Silo")
+j get
+SetupGold:
+move r0 HASH("Gold Silo")
+j get
+SetupSilicon:
+move r0 HASH("Silicon Silo")
+j get
+SetupSilver:
+move r0 HASH("Silver Silo")
+j get
+SetupLead:
+move r0 HASH("Lead Silo")
+j get
+SetupNickel:
+move r0 HASH("Nickel Silo")
+j get
+SetupCoal:
+move r0 HASH("Coal Silo")
+j get
+SetupCobalt:
+move r0 HASH("Cobalt Silo")
+j get
+GetSteel:
+move r0 HASH("Steel Silo")
+j get
+SetupSteel:
+jal SetupIron
+jal SetupIron
+jal SetupIron
+jal SetupCoal
+j idle
+SetupInvar:
+jal SetupIron
+jal SetupNickel
+j idle
+SetupSolder:
+jal SetupIron
+jal SetupLead
+j idle
+SetupElectrum:
+jal SetupGold
+jal SetupSilver
+j idle
+SetupConstantan:
+jal SetupCopper
+jal SetupNickel
+j idle
+SetupInconel:
+jal SetupGold
+jal SetupGold
+jal GetSteel
+jal SetupNickel
+j idle
+SetupAstroloy:
+jal GetSteel
+jal GetSteel
+jal SetupCopper
+jal SetupCobalt
+j idle
+SetupStellite:
+jal SetupSilicon
+jal SetupSilicon
+jal SetupCobalt
+jal SetupSilver
+j idle
+SetupHastelloy:
+jal SetupSilver
+jal SetupSilver
+jal SetupNickel
+jal SetupCobalt
+j idle
+SetupWaspaloy:
+jal SetupLead
+jal SetupLead
+jal SetupNickel
+jal SetupSilver
+j idle
+get:
+move r15 r3
+sbn Silo r0 ClearMemory 1
+sbn Silo r0 Open 1
+yield
+sbn Silo r0 Open 0
+yield
+sub r15 r15 1
+brgtz r15 -5
+j ra

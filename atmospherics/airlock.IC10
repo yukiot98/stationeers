@@ -1,0 +1,128 @@
+alias outerdoor d0
+alias innerdoor d1
+alias airlocksensor d2 #Gas Sensor
+alias diode d3 #Diode Slide (optional)
+alias light d4 #LED
+alias ocupationSensor d5 #Sensor checks if someone is inside the airlock (optional)
+define ACTIVEVENT -1129453144
+define SENSOR -1252983604
+alias vent r10
+alias sensor r11
+alias safe r12
+define OUTERVENT HASH("Outer Vent") #Vents must be named as per below.
+define INNERVENT HASH("Inner Vent") #Multiple vents can be used.
+#Install sensors outside each side of the airlock
+define OUTERSENSOR HASH("Outer Sensor")
+define INNERSENSOR HASH("Inner Sensor")
+
+restart:
+s outerdoor Mode 1
+s innerdoor Mode 1
+s outerdoor Open 0
+s innerdoor Open 0
+s outerdoor Setting 0
+s innerdoor Setting 0
+sb ACTIVEVENT On 0
+s innerdoor Lock 0 #unlocks door. just in case a previous script locked it
+s outerdoor Lock 0 #unlocks door. just in case a previous script locked it
+move vent OUTERVENT
+move sensor OUTERSENSOR
+start:
+sbn ACTIVEVENT vent Mode 0
+sbn ACTIVEVENT vent On 1
+s light Color Color.Red
+repressure:
+yield
+l r0 outerdoor Setting
+bnez r0 open
+l r0 airlocksensor Pressure
+lbn r1 SENSOR sensor Pressure Average
+sbn ACTIVEVENT vent PressureExternal r1
+div r2 r0 r1
+brdns diode 2 #makes diode a optional feature
+s diode Setting r2
+lb r9 491845673 Activate Sum #reads in emergency button, will be 0 if no butten exists
+bgtz r9 open #breaks repressurisation loop if emergency button was pressed
+blt r0 r1 repressure
+open:
+sb ACTIVEVENT On 0
+yield
+s outerdoor Open 1
+s outerdoor Setting 1
+waitbutton:
+yield
+jal checksensors
+beq safe 1 waitbutton
+brdns ocupationSensor 4 #makes ocupationSensor a optional feature
+move r14 r15 #store old value of ocupation sensor
+l r15 ocupationSensor Activate #reads in new value of ocupation sensor
+bgt r15 r14 bypass #bypass buttons if ammount of people in airlock increased
+l r0 outerdoor Setting
+l r1 innerdoor Setting
+bne r0 r1 waitbutton
+bypass:
+s outerdoor Open 0
+s outerdoor Setting 0
+s innerdoor Setting 0
+s light Color Color.Red
+yield
+yield
+sbn ACTIVEVENT vent Mode 1
+sbn ACTIVEVENT vent On 1
+depressure:
+yield
+l r0 outerdoor Setting
+bnez r0 open
+l r0 airlocksensor Pressure
+lbn r1 SENSOR sensor Pressure Average
+div r2 r0 r1
+brdns diode 2 #makes diode a optional feature
+s diode Setting r2
+lb r9 491845673 Activate Sum #reads in emergency button, will be 0 if no butten exists
+bgtz r9 switch #breaks depressurisation loop if emergency button was pressed
+bgtz r0 depressure
+switch:
+sb ACTIVEVENT On 0
+seq r0 vent OUTERVENT
+select vent r0 INNERVENT OUTERVENT
+select sensor r0 INNERSENSOR OUTERSENSOR
+alias outerdoor dr0
+seqz r0 r0
+alias innerdoor dr0
+j start
+
+checksensors:
+lbn r0 SENSOR INNERSENSOR Pressure Average
+lbn r1 SENSOR OUTERSENSOR Pressure Average
+sap safe r0 r1 0.1
+lbn r0 SENSOR INNERSENSOR Temperature Average
+lbn r1 SENSOR OUTERSENSOR Temperature Average
+sap r0 r0 r1 0.02
+and safe safe r0
+lbn r0 SENSOR INNERSENSOR RatioVolatiles Average
+lbn r1 SENSOR OUTERSENSOR RatioVolatiles Average
+max r0 r0 r1
+slt r0 r0 0.005
+and safe safe r0
+lbn r0 SENSOR INNERSENSOR RatioPollutant Average
+lbn r1 SENSOR OUTERSENSOR RatioPollutant Average
+max r0 r0 r1
+slt r0 r0 0.005
+and safe safe r0
+lbn r0 SENSOR INNERSENSOR RatioNitrousOxide Average
+lbn r1 SENSOR OUTERSENSOR RatioNitrousOxide Average
+max r0 r0 r1
+slt r0 r0 0.005
+and safe safe r0
+lbn r0 SENSOR INNERSENSOR RatioNitrogen Average
+lbn r1 SENSOR OUTERSENSOR RatioNitrogen Average
+sap r0 r0 r1 0.1
+and safe safe r0
+lbn r0 SENSOR INNERSENSOR RatioOxygen Average
+lbn r1 SENSOR OUTERSENSOR RatioOxygen Average
+sap r0 r0 r1 0.1
+and safe safe r0
+s innerdoor Open safe
+sub r0 3 safe
+s light Color r0
+j ra

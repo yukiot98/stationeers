@@ -1,0 +1,90 @@
+#HASH values
+define battMed -1125305264 
+define avionics 808389066 
+define miner -2087223687 
+define scanner 2014252591 
+define cargoMed 1151864003
+define downlink 876108549 
+define tankgas 435685051
+define tankliquid -2113838091 
+define engPumpGas -214232602 
+define ledS -2041948072 
+define UmbPower 1529453938 
+define UmbGas -1814939203 
+define UmbLiquid -1798420047 
+define UmbChute -958884053 
+define lever 1773255945 
+define dial 1465300791
+define cargoS -1493672123
+define ledM -246585138
+define engpumpliquid -2031440019
+define towername HASH("")
+define rocketname HASH("")
+Start:
+    yield 
+    jal Read
+    beqal r0 2 mineON #mode = 2 -> miner ON
+    bneal r0 2 mineOFF #mode !=2 -> miner OFF
+    bgeal r0 3 scanON #mode = 3/4/5 -> scanner ON
+    bltal r0 3 scanOFF #mode != 3/4/5 -> scanner OFF
+    jal Umbilicals #sets umbilocals based on lever
+    jal SetLED #update the LED displays
+    sbn cargoMed rocketname On 1
+    sbn tankgas rocketname On 1
+    #sbn tankliquid rocketname On 1
+j Start 
+Read:
+    lbn r0 avionics rocketname Mode Sum
+    lbn r1 tankliquid rocketname TotalMoles Sum
+    lbn r2 miner rocketname DrillCondition Average
+    lbn r3 battMed rocketname Ratio Average
+    lbn r4 cargoMed rocketname Ratio Average
+    lbn r5 avionics rocketname TimeToDestination Sum
+    lbn r7 avionics rocketname Progress Sum
+    lbn r6 lever towername On Sum
+    lbn r12 avionics rocketname Survey Maximum
+    lbn r13 avionics rocketname Discover Maximum
+j ra
+#enable/disable miners
+mineON:
+    sbn miner rocketname On 1
+j ra
+mineOFF:
+    sbn miner rocketname On 0
+j ra
+#enable/disable scanners
+scanON:
+    sbn scanner rocketname On 1
+j ra
+scanOFF:
+    sbn scanner rocketname On 0
+j ra
+#extends and retracts umbilicals via lever
+Umbilicals:
+    sbn UmbPower towername Open r6
+    sbn UmbPower towername On r6
+    sbn UmbGas towername Open r6
+    sbn UmbGas towername On r6
+    sbn UmbLiquid towername Open r6
+    sbn UmbLiquid towername On r6
+    sbn UmbChute towername Open r6
+    sbn UmbChute towername On r6
+j ra
+#set values to displays
+SetLED:
+    sbn ledM HASH("LED Rocket Fuel1") Mode 0
+    sbn ledM HASH("LED Rocket Battery1") Mode 1
+    sbn ledM HASH("LED Drill Condition1") Mode 1
+    sbn ledM HASH("LED Rocket Cargo1") Mode 1
+    sbn ledM HASH("LED Rocket Fuel1") Setting r1
+    sbn ledM HASH("LED Drill Condition1") Setting r2
+    sbn ledM HASH("LED Rocket Battery1") Setting r3
+    sbn ledM HASH("LED Rocket Cargo1") Setting r4
+    sbn ledM HASH("LED DestTime1") Setting r5
+    sbn ledM HASH("LED Prog1") Mode 1
+    sbn ledM HASH("LED Prog1") Setting r7
+    sbn ledM HASH("LED Survey1") Mode 1
+    sbn ledM HASH("LED Survey1") Setting r12
+    sbn ledM HASH("LED Discover1") Mode 1
+    sbn ledM HASH("LED Discover1") Setting r13
+j ra

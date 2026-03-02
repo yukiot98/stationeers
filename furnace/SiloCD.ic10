@@ -1,0 +1,116 @@
+define led -246585138 #Update:6.22
+define Silo 1155865682
+define dial 1465300791
+loop:
+s db Setting 5
+lbn r11 dial HASH("Ingot Dial") Setting 2
+lbn r12 dial HASH("Amount Dial") Setting 2
+lbn r13 -1446063838 HASH("Confirm Button") Setting 2
+lbn r6 -851746783 HASH("Link") Setting 2
+or r13 r13 r6
+lbn r1 Silo HASH("Iron Silo") Quantity 2
+mul r0 r1 1
+sbn led HASH("Iron Display") Setting r0
+lbn r2 Silo HASH("Copper Silo") Quantity 2
+mul r0 r2 1
+sbn led HASH("Copper Display") Setting r0
+lbn r3 Silo HASH("Gold Silo") Quantity 2
+mul r0 r3 1
+sbn led HASH("Gold Display") Setting r0
+lbn r4 Silo HASH("Silicon Silo") Quantity 2
+mul r0 r4 1
+sbn led HASH("Silicon Display") Setting r0
+lbn r5 Silo HASH("Silver Silo") Quantity 2
+mul r0 r5 1
+sbn led HASH("Silver Display") Setting r0
+lbn r6 Silo HASH("Lead Silo") Quantity 2
+mul r0 r6 1
+sbn led HASH("Lead Display") Setting r0
+lbn r7 Silo HASH("Nickel Silo") Quantity 2
+mul r0 r7 1
+sbn led HASH("Nickel Display") Setting r0
+lbn r8 Silo HASH("Coal Silo") Quantity 2
+mul r0 r8 1
+sbn led HASH("Coal Display") Setting r0
+lbn r9 Silo HASH("Cobalt Silo") Quantity 2
+mul r0 r9 1
+sbn led HASH("Cobalt Display") Setting r0
+lbn r10 Silo HASH("Steel Silo") Quantity 2
+mul r0 r10 1
+sbn led HASH("Steel Display") Setting r0
+breq r13 1 2
+j loop
+brgt r11 7 2
+blt rr11 r12 Low
+beqal r11 8 CheckSteel
+beqal r11 9 CheckInvar
+beqal r11 10 CheckSolder
+beqal r11 11 CheckElectrum
+beqal r11 12 CheckConstantan
+beqal r11 13 CheckWaspaloy
+
+beqal r11 14 CheckInconel
+beqal r11 15 CheckAstroloy
+beqal r11 16 CheckHastelloy
+beqal r11 17 CheckStellite
+j High
+CheckSteel:
+blt r8 r12 Low
+mul r12 r12 3
+blt r1 r12 Low
+j High
+CheckInvar:
+blt r7 r12 Low
+blt r1 r12 Low
+j High
+CheckSolder:
+blt r1 r12 Low
+blt r6 r12 Low
+j High
+CheckElectrum:
+blt r3 r12 Low
+blt r5 r12 Low
+j High
+CheckConstantan:
+blt r2 r12 Low
+blt r7 r12 Low
+j High
+CheckWaspaloy:
+blt r7 r12 Low
+blt r5 r12 Low
+mul r12 r12 2
+blt r6 r12 Low
+j High
+CheckInconel:
+blt r7 r12 Low
+#blt r10 r12 Low
+#mul r12 r12 2
+blt r3 r12 Low
+j High
+CheckAstroloy:
+blt r2 r12 Low
+blt r9 r12 Low
+mul r12 r12 2
+#blt r10 r12 Low
+j High
+CheckHastelloy:
+blt r9 r12 Low
+blt r7 r12 Low
+mul r12 r12 2
+blt r5 r12 Low
+j High
+CheckStellite:
+blt r9 r12 Low
+blt r5 r12 Low
+mul r12 r12 2
+blt r4 r12 Low
+j High
+Low:
+sbn 1311586884 HASH("SLight") Color 0
+s db Setting -1000
+sleep 1
+yield
+j loop
+High:
+s db Setting 1
+j loop

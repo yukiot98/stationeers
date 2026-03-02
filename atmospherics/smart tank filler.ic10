@@ -1,0 +1,91 @@
+alias Canister d0
+alias VolPump d1
+alias LogicBtn d2
+alias LedLight d3
+
+alias isActive r0
+alias canisterIn r1
+alias canisterPress r2
+alias buttonPressed r3
+alias lightOn r4
+alias canistertype r5
+define smartcan -668314371
+define smallcan 42280099
+#start of the cycle
+Start:
+ls canisterIn Canister 0 Occupied
+ls canistertype Canister 0 OccupantHash
+#if canister exists move to Canister In Block
+bnez canisterIn CanisterIn
+#Canister is out, lets cycle a red light
+l lightOn LedLight On
+s LedLight Color 4
+#if on, turn off
+bnez lightOn LedOff
+s LedLight On 1
+j RecycleNoCanister
+LedOff:
+s LedLight On 0
+
+RecycleNoCanister:
+sleep 1
+j Start
+
+CanisterIn:
+ls canisterPress Canister 0 Pressure
+s LedLight On 1
+bgt canisterPress 500 Orange
+s LedLight Color 4
+j FillCanister
+
+Orange:
+bgt canisterPress 1000 Yellow
+s LedLight Color 3
+j FillCanister
+
+Yellow:
+bgt canisterPress 4000 Green
+s LedLight Color 5
+j FillCanister
+
+Green:
+beq canistertype smallcan normalfill
+beq canistertype smartcan smartfill
+s LedLight Color 4
+j Blue
+
+normalfill:
+bgt canisterPress 8000 Blue
+s LedLight Color 2
+j FillCanister
+
+smartfill: 
+bgt canisterPress 18000 Blue
+s LedLight Color 2
+j FillCanister
+
+Blue:
+s LedLight Color 0
+s VolPump On 0
+move isActive 0
+j ReCycle
+
+#if active is false, check button status
+#else ensure pump is on
+FillCanister:
+beqz isActive CheckButton
+s VolPump On 1
+j ReCycle
+
+#if button is open(pressed) start pump set active
+#if not we loop again, blue status will turn off
+CheckButton:
+l buttonPressed LogicBtn Setting
+beqz buttonPressed ReCycle
+move isActive 1
+s VolPump On 1
+
+
+
+ReCycle:
+j Start

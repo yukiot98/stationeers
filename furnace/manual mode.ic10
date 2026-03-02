@@ -1,0 +1,32 @@
+define furnace 545937711
+define input 1070499908
+define smallled 1311586884
+define flipswitch -236516384
+define smallswitch 1773255945
+define pump -321403609
+define logicbut 489382030
+
+alias furnacestate r1
+start:
+yield
+lbn r0 smallswitch HASH("coolantswitch") Setting 3
+sbn pump HASH("CoolantPump") On r0
+lbn r0 smallswitch HASH("fuelswitch") Setting 3
+sbn pump HASH("FuelPump") On r0
+lbn r0 logicbut HASH("activate") Setting 3
+sbn furnace HASH("A Furnace") Activate r0
+lbn r0 input HASH("furnacevent") Setting 3
+mul r0 r0 100
+sbn furnace HASH("A Furnace") SettingOutput r0
+lbn r0 input HASH("furnaceinput") Setting 3
+mul r0 r0 100
+sbn furnace HASH("A Furnace") SettingInput r0
+lbn r0 input HASH("fuelpump") Setting 3
+mul r0 r0 10
+sbn pump HASH("FuelPump") Setting r0
+lbn r0 input HASH("coolantcontrol") Setting 3
+mul r0 r0 10
+sbn pump HASH("CoolantPump") Setting r0
+j start
+#FuelPump
+#CoolantPump

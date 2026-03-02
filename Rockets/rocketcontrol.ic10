@@ -1,0 +1,121 @@
+alias destinationdial d0 #to read selection from dial
+define rocketbattery -1125305264 #to read charge ratio from all batteries
+define umblever 1773255945 #to automatically control the umbilical lever
+alias rocketengine d3 #to turn on rocket engines
+alias rocketavionics d4 #to read/write data to avionics
+define rocketminers -2087223687 
+define rocketscanners 2014252591 
+define rocketcargo -1493672123 
+define rocketcargomed 1151864003
+define rockettankgas 435685051 
+define rockettankliquid -2113838091
+define button 1462769197
+define dial 1465300791
+define fuelset 26000
+alias fuelsetting r10
+alias mode r11
+alias home r12 #change as needed
+alias launchbutton d1
+define rocketname HASH("")
+alias towerswitch r13
+define modedial HASH("")
+alias landingsel d2
+define homenotset 4116
+define landing1 4016
+define landing2 4116
+define tower1 HASH("")
+define tower2 HASH("")
+Start:
+    yield
+    lbn mode dial modedial Setting 3 
+    beq mode 2 checksystems
+    beq mode 0 Start
+    jal homeset
+    sbn umblever towerswitch On 1 
+    #sbn rockettankgas rocketname On 1 
+    sbn rockettankliquid rocketname On 1 
+    sbn rocketcargomed rocketname On 1 
+    sbn rocketcargomed rocketname Open 1 
+    lbn r0 rocketcargomed rocketname Ratio 0 
+    bgt r0 0 Start 
+    lbn r0 rocketbattery rocketname Ratio 0 
+    blt r0 0.99 Start
+    #lbn r0 rockettankgas rocketname Pressure 3 
+    lbn r0 rockettankliquid rocketname VolumeOfLiquid 3
+    mul r0 r0 29
+    blt r0 fuelset Start 
+    brdns launchbutton 3 
+    l r0 launchbutton Activate 
+    blt r0 1 Start
+    sleep 5 
+    l r0 destinationdial Setting
+    beq r0 0 Start #set to zero to hold launch
+    beq r0 1 dial1 # add as many as needed
+
+j Start
+    dial1:
+        s rocketavionics DestinationCode 24020116 #water
+    j readytolaunch
+
+readytolaunch:
+    sbn umblever towerswitch On 0 
+    sleep 10 
+    s rocketengine On 1 
+    sleep 5 
+destinationwait:
+    l r0 rocketavionics TimeToDestination 
+    bgt r0 0 destinationwait
+checksystems:
+    yield
+    #sbn rockettankgas rocketname On 1 
+    sbn rockettankliquid rocketname On 1
+    lbn r0 rocketbattery rocketname Ratio 0 
+    ble r0 0.30 returnhome 
+    beq mode 3 scan
+    beq mode 4 scan
+startmining:
+    sbn rocketcargomed rocketname On 1 
+    s rocketavionics Mode 2
+    sbn rocketminers rocketname On 1
+    lbn r0 rocketcargomed rocketname Ratio 0
+    blt r0 1 checksystems 
+returnhome:
+    brne mode 2 2
+    sbn dial modedial Setting 0
+    sbn rocketminers rocketname On 0
+    s rocketavionics Mode 1
+    s rocketavionics DestinationCode home
+    sleep 10
+    s rocketengine On 1
+    sleep 5
+nothome:
+    l r0 rocketavionics TimeToDestination 
+    bgt r0 0 nothome 
+sbn umblever towerswitch On 1 
+sleep 5 
+j Start 
+scan:
+    l r0 rocketavionics Mode
+    breq r0 3 5
+    s rocketavionics Mode 4
+    sbn rocketscanners rocketname On 1
+    l r0 rocketavionics Sites
+    bgtz r0 scan
+    s rocketavionics Mode 3
+    sbn rocketscanners rocketname On 1 
+    l r0 rocketavionics Survey
+    j checksystems
+    j scan 
+homeset:
+    brdns landingsel 9
+    l r13 landingsel On
+    breq r13 1 4
+    move home landing1
+    move towerswitch tower1
+    j ra
+    move home landing2
+    move towerswitch tower2
+    j ra
+    move home homenotset
+    move towerswitch tower1
+    j ra

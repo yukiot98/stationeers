@@ -1,0 +1,36 @@
+# AC control
+alias AC        db
+alias GasSensor d0
+
+alias temperature r0
+alias poweron    r1
+alias setpointK  r2
+alias heating    r3
+alias cooling    r4
+alias highspK    r5
+alias lowspK     r6
+alias setpointC  r7
+
+move setpointK 298.15
+
+sub lowspK  setpointK 2
+add highspK setpointK 2
+
+sub setpointC setpointK 273.15
+
+loop:
+l temperature GasSensor Temperature
+
+sgt cooling temperature highspK
+slt heating temperature lowspK
+
+
+add poweron cooling heating
+sgt poweron poweron 0
+
+s AC Setting setpointK
+
+s AC Mode poweron
+
+yield
+j loop
