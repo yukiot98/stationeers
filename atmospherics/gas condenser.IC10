@@ -1,0 +1,67 @@
+#needs updating to new version with analyzers
+#need an analyser for each gas and liquid, could be pushed into stack to make smaller
+define smalltank 272136332
+define liquidsmall 608607718
+define valve -1280984102
+define evap -737232128
+alias gtank r0
+alias ltank r1
+alias greg r2
+alias lreg r3
+alias ppress r4
+alias vvolume r5
+alias set1 r6
+alias set2 r7
+alias vname r8
+alias ename r9
+alias ltankp r11
+define maxliquidpress 4800 #maximum pressin liquid tank before the condenser powers down
+define maxliquid 4800 #max liquid volume
+alias maxpress r10
+define minpress 10000 #minimum gas pressure before evaporator activates
+define minliquid 1500 #minimum liquid you want maintained
+start:
+yield 
+move maxpress 11000
+move gtank HASH("COTank")
+move ltank HASH("CO2LiquidTank")
+move vname HASH("co2condense")
+move ename HASH("lco2evap")
+jal run
+move gtank HASH("H2Tank")
+move ltank HASH("VolLiquidTank")
+move vname HASH("volcondense")
+move ename HASH("volevap")
+jal run
+move gtank HASH("O2Tank")
+move ltank HASH("O2LiquidTank")
+move vname HASH("o2condense")
+move ename HASH("lo2evap")
+jal run
+move gtank HASH("N2Tank")
+move ltank HASH("N2LiquidTank")
+move vname HASH("n2condense")
+move ename HASH("ln2evap")
+jal run
+move maxpress 400
+move gtank HASH("N2O1Tank")
+move ltank HASH("N2OLiquidTank1")
+move vname HASH("n2ocondense1")
+move ename HASH("ln2oevap1")
+jal run
+j start
+run:
+lbn ppress smalltank gtank Pressure 0
+lbn vvolume liquidsmall ltank VolumeOfLiquid 0
+lbn ltankp liquidsmall ltank Pressure 0
+sgt greg ppress maxpress
+slt lreg vvolume maxliquid 
+and set1 greg lreg
+slt ltankp ltankp maxliquidpress
+and set1 set1 ltankp
+sbn valve vname On set1
+slt greg ppress minpress
+sgt lreg vvolume minliquid
+and set2 greg lreg
+sbn evap ename On set2
+j ra
