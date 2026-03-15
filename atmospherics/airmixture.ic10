@@ -15,9 +15,9 @@ alias pumpCarbonDioxide d3
 alias ventoverpress d4
 #alias heater d5
 
-define minimumNitrogenRatio 0.1
-define minimumOxygenRatio 0.40
-define minimumCO2Ratio 0.45
+define minimumNitrogenRatio 0.77
+define minimumOxygenRatio 0.23
+define minimumCO2Ratio 0.10
 define minimumPressure 80
 define maximumPressure 100
 define minimumTemp 293
@@ -42,14 +42,14 @@ s pumpOxygen Setting r0
 s pumpCarbonDioxide Setting r0
 j ra
 
-checkCarbonDioxide:
+checkNitrogen:
 #if below minimum pressure then add CO2
 l r0 sensor Pressure
 slt r0 r0 minimumPressure
-l r1 sensor RatioCarbonDioxide
-slt r1 r1 minimumCO2Ratio
+l r1 sensor RatioNitrogen
+slt r1 r1 minimumNitrogenRatio
 or r0 r0 r1
-s pumpCarbonDioxide On r0
+s pumpNitrogen On r0
 j ra
 
 checkOxygen:
@@ -58,10 +58,10 @@ slt r0 r0 minimumOxygenRatio
 s pumpOxygen On r0
 j ra
 
-checkNitrogen:
-l r0 sensor RatioNitrogen
-slt r0 r0 minimumNitrogenRatio
-s pumpNitrogen  On r0
+checkCarbonDioxide:
+l r0 sensor RatioCarbonDioxide
+slt r0 r0 minimumCO2Ratio
+s  pumpCarbonDioxide On r0
 j ra
 
 checkvent:
