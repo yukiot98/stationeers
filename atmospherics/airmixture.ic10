@@ -15,7 +15,7 @@ alias pumpCarbonDioxide d3
 alias ventoverpress d4
 #alias heater d5
 
-define minimumNitrogenRatio 0.77
+define minimumNitrogenRatio 0.67
 define minimumOxygenRatio 0.23
 define minimumCO2Ratio 0.10
 define minimumPressure 80
