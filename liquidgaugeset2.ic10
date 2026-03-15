@@ -1,0 +1,131 @@
+alias Gauge1 d0 # 1st console display gauge
+brdns d0 2 # skip if not set
+alias GasTank1 d3 # 1st gas tank to monitor
+
+alias Gauge2 d1 # 2nd console display gauge
+brdns d1 2 # skip if not set
+alias GasTank2 d4 # 2nd gas tank to monitor
+
+alias Gauge3 d2 # 3rd console display gauge
+brdns d2 2 # skip if not set
+alias GasTank3 d5 # 3rd gas tank to monitor
+
+# setup register references
+alias GasLevel1 r0
+alias GasLevel2 r1
+alias GasLevel3 r2
+alias GaugeColour1 r3
+alias GaugeColour2 r4
+alias GaugeColour3 r5
+alias MaxPressure r6 # unsafe above ~ 60,000 kPa
+define smallled -2041948072
+start:
+ yield
+ move MaxPressure 6000
+ # loads pressure, calc. % full, display on gauge
+ brdns d0 16 # skip if not set
+ l GasLevel1 GasTank1 VolumeOfLiquid
+ add GasLevel1 GasLevel1 0.0001
+ div GasLevel1 GasLevel1 MaxPressure
+ s d0 Setting GasLevel1
+ l GasLevel1 GasTank1 TotalMoles
+ sbn smallled HASH("lvolmol") Mode 13
+ sbn smallled HASH("lvolmol") Setting GasLevel1
+ l GasLevel1 GasTank1 Temperature
+ sub GasLevel1 GasLevel1 274.15
+ sbn smallled HASH("lvoltemp") Mode 4
+ sbn smallled HASH("lvoltemp") Setting GasLevel1
+ l GasLevel1 GasTank1 VolumeOfLiquid
+ #mul GasLevel1 GasLevel1 1000
+ sbn smallled HASH("lvollevel") Mode 12
+ sbn smallled HASH("lvollevel") Setting GasLevel1
+
+ move MaxPressure 6000
+
+ brdns Gauge2 16 # skip if not set
+ l GasLevel2 GasTank2 VolumeOfLiquid
+ add GasLevel2 GasLevel2 0.0001
+ div GasLevel2 GasLevel2 MaxPressure
+ s Gauge2 Setting GasLevel2
+ l GasLevel2 GasTank2 TotalMoles
+ sbn smallled HASH("ln2mol") Mode 13
+ sbn smallled HASH("ln2mol") Setting GasLevel2
+ l GasLevel2 GasTank2 Temperature
+ sub GasLevel2 GasLevel2 274.15
+ sbn smallled HASH("ln2temp") Mode 4
+ sbn smallled HASH("ln2temp") Setting GasLevel2
+ l GasLevel2 GasTank2 VolumeOfLiquid
+ #mul GasLevel2 GasLevel2 1000
+ sbn smallled HASH("ln2level") Mode 12
+ sbn smallled HASH("ln2level") Setting GasLevel2
+
+  brdns Gauge3 16 # skip if not set
+ l GasLevel3 GasTank3 VolumeOfLiquid
+ add GasLevel3 GasLevel3 0.0001
+ div GasLevel3 GasLevel3 MaxPressure
+ s Gauge3 Setting GasLevel3
+ l GasLevel3 GasTank3 TotalMoles
+ sbn smallled HASH("ln2omol") Mode 13
+ sbn smallled HASH("ln2omol") Setting GasLevel3
+ l GasLevel3 GasTank3 Temperature
+ sub GasLevel3 GasLevel3 274.15
+ sbn smallled HASH("ln2otemp") Mode 4
+ sbn smallled HASH("ln2otemp") Setting GasLevel3
+ l GasLevel3 GasTank3 VolumeOfLiquid
+ #mul GasLevel3 GasLevel3 1000
+ sbn smallled HASH("ln2olevel") Mode 12
+ sbn smallled HASH("ln2olevel") Setting GasLevel3
+
+ # set gauge colour based on fill percentage
+ brdns d0 10 # skip if not set
+ div GasLevel1 GasLevel1 1000
+ alias Gauge d0
+ brge GasLevel1 0.10 2
+ jal setred
+ brge GasLevel1 0.33 2
+ jal setorange
+ brge GasLevel1 0.66 2
+ jal setyellow  
+ jal setgreen 
+
+ brdns d1 10 # skip if not set
+ div GasLevel2 GasLevel2 1000
+ alias Gauge d1
+ brge GasLevel2 0.10 2
+ jal setred
+ brge GasLevel2 0.33 2
+ jal setorange
+ brge GasLevel2 0.66 2
+ jal setyellow
+ jal setgreen
+
+ brdns d2 10 # skip if not set
+ div GasLevel3 GasLevel3 1000
+ alias Gauge d2
+ brge GasLevel3 0.10 2
+ jal setred
+ brge GasLevel3 0.33 2
+ jal setorange
+ brge GasLevel3 0.66 2
+ jal setyellow
+ jal setgreen
+j start
+
+setred:
+ s Gauge Color 4 # red
+ add ra ra 5
+j ra
+
+setorange:
+ s Gauge Color 3 # orange
+ add ra ra 3
+j ra
+
+setyellow:
+ s Gauge Color 5 # yellow
+ add ra ra 1
+j ra
+
+setgreen:
+ s Gauge Color 2 # green
+j ra

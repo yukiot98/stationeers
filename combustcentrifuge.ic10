@@ -1,0 +1,123 @@
+alias centrifuge db
+alias lever d0
+
+alias maxRPM r15
+alias lastRPM r14
+alias stress r13
+alias rpm r12
+alias throttle r11
+alias limiter r10
+alias state r9
+alias open r8
+
+define IDLE 0
+define PROCESS 1
+define EJECT 2
+define Display HASH("StructureConsoleLED5")
+main:
+  yield
+  l stress centrifuge Stress
+  l rpm centrifuge Rpm
+  l r0 centrifuge RatioOxygenInput
+  l r1 centrifuge RatioNitrousOxideInput
+  l r6 centrifuge RatioVolatiles
+  # calc maxRPM
+  mul r2 r0 2 # O2 * 2
+  add r3 r2 r1 # O2 * 2 + N2O : amount of vol needed
+  div r6 r6 r3 # ratio of vol that can burn
+  max r6 r6 1
+  mul r0 r0 r6 # amount of oxygen that can oxidize
+  mul r1 r1 r6 # amount of N2O that can oxidize
+  mul r2 r0 2 # O2 * 2
+  add r3 r2 r1 # O2 * 2 + N2O : real amount of vol used
+  div r4 r2 r3 # (O2 * 2) /  (O2 * 2 + N2O)
+  div r5 r1 r3 # N2O /  (O2 * 2 + N2O)
+  mul r2 r5 2
+  add r2 r2 r4
+  mul r2 r2 214500 # Combustion energy of one mol (assumes 75% max combustion + no liquids
+  mul r0 109.4 r4
+  add r0 r0 24.8 # heat cap of Oxygen + Vol products
+  mul r1 97.6 r5 # heat cap of N2O + Vol products
+  add r0 r0 r1 # total heat cap
+  mul r0 r0 0.75 #adjust by max combustion ratio
+  div r0 r2 r0 # combustion energy / heat cap = final temp
+  div r1 r0 5000 # centrifuge mat RPM temp
+  min r1 r1 1
+  max r1 r1 0 # clamp 0-1
+  mul maxRPM 1188 r1 # max RPM for this mix
+  # state management
+  seq r0 state IDLE
+  bnezal r0 idle
+  beqal state PROCESS process
+  beqal state EJECT eject
+  jal display
+  # set outputs
+  s centrifuge Throttle throttle
+  s centrifuge CombustionLimiter limiter
+  s centrifuge Open open
+j main
+throttleControl:
+  div r4 maxRPM 100 # combustion factor
+  mul r0 maxRPM 0.9 # aim low for efficiency
+  mul r2 r0 r0
+  div r2 r2 8 # f = maxRPM^2/8  -> geometric power of 2 growth
+  sub r1 rpm lastRPM # delta
+  move lastRPM rpm
+  div limiter rpm r4 # rpm / combustion factor -> liner to rpm
+  mul r3 rpm rpm #geometric response
+  div r3 r3 r2
+  add r3 r3 2 # increase the setpoint to speed up
+  sub throttle r3 r1
+  max throttle throttle 0
+  min throttle throttle 10
+  mul stress stress stress # geometric backoff
+  div stress stress 10000
+  sub stress 1 stress
+  mul throttle throttle 10
+  mul throttle throttle stress
+j ra
+idle:
+  l r0 centrifuge Reagents
+  sge r1 r0 800 # full
+  brdns lever 3
+    l r0 lever Open # override
+    or r1 r1 r0 # full || override
+  ls r2 centrifuge 0 Quantity
+  sgtz r2 r2
+  seqz r3 r1 # !full
+  and r3 r3 r2 # !full && have input
+  select state r3 PROCESS state
+  select state r1 EJECT state
+j ra
+process:
+  push ra
+  move open 0
+  jal throttleControl
+  l r0 centrifuge Reagents
+  sge r0 r0 800 # full
+  ls r1 centrifuge 0 Quantity
+  seqz r1 r1
+  or r0 r0 r1
+  brdns lever 3
+    l r1 lever Open
+    or r0 r0 r1
+  select state r0 IDLE state
+  pop ra
+j ra
+display:
+  sbn Display HASH("StateDisplay") Setting state
+  sbn Display HASH("Limiter") Setting limiter
+  sbn Display HASH("Throttle") Setting throttle
+j ra
+eject:
+  move throttle 0 # break, this *will* cause stress (sadly)
+  move limiter 0
+  sle open rpm 40
+  l r1 centrifuge Reagents
+  sge r1 r1 1
+  and open open r1 # open if slow and have reagents
+  seqz r0 stress # no stress
+  slt r1 r1 1 # no reagents
+  and r0 r0 r1
+  select state r0 IDLE state
+j ra

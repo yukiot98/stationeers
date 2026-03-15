@@ -1,0 +1,27 @@
+define ramps 1298920475
+define switch -1612655781
+define lights -444430760
+define plat1 HASH("platform1")
+define plat2 HASH("platform2")
+define plat3 HASH("platform3")
+define plat4 HASH("platform4")
+start:
+yield
+  lbn r0 switch plat1 Setting 3
+  lbn r1 switch plat2 Setting 3
+  lbn r2 switch plat3 Setting 3
+  lbn r3 switch plat4 Setting 3
+
+  sbn ramps plat1 On r0
+  sbn ramps plat1 Open r0
+  sbn lights plat1 On r0
+  sbn ramps plat2 On r1
+  sbn ramps plat2 Open r1
+  sbn lights plat2 On r1
+  sbn ramps plat3 On r2
+  sbn ramps plat3 Open r2
+  sbn lights plat3 On r2
+  sbn ramps plat4 On r3
+  sbn ramps plat4 Open r3
+  sbn lights plat4 On r3
+j start 

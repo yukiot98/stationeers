@@ -1,0 +1,88 @@
+define outer HASH("outerdoor")
+define airlocksensor HASH("rocketair")
+define hangardoor -1351081801
+define activevent -785498334
+define sensors -1252983604
+define logicsw -1612655781
+alias vent r10
+alias sensor r11
+alias safe r12
+alias openset r0
+alias pressure1 r1
+alias pressure2 r4
+alias pressure3 r5
+alias reg1 r2
+alias reg2 r3
+define outervent HASH("Outer Vent")
+define innervent HASH("Inner Vent") 
+define outersensor HASH("Outer Sensor")
+define innersensor HASH("Inner Sensor")
+define depress HASH("hangaropen")
+define logic 2037291645
+define valve -1280984102
+define pump -444554524
+restart:
+sbn hangardoor outer Mode 1
+sbn hangardoor outer Open 0
+sbn hangardoor outer Setting 0
+sbn activevent outervent On 0
+sbn activevent outersensor On 0
+sbn hangardoor outer Lock 1
+move vent innervent 
+move sensor innervent
+start:
+sbn logic HASH("hangerpressure") On 1
+sbn logic HASH("hangertemp") On 1
+yield
+lbn openset logicsw depress On 3
+beq openset 1 shutdown
+beq openset 0 start
+shutdown:
+sbn logic HASH("hangerpressure") On 0
+sbn logic HASH("hangertemp") On 0
+sbn valve HASH("hangerheat") On 0
+sbn valve HASH("hangercold") On 0
+sbn pump HASH("hangern2") On 0
+sbn pump HASH("hangero2") On 0
+sbn pump HASH("hangerco") On 0
+sleep 15
+move vent innervent
+move sensor innersensor
+depressure:
+yield 
+sbn hangardoor outer Open 0
+sbn activevent vent Mode 1
+sbn activevent vent On 1
+lbn pressure1 sensors airlocksensor Pressure 0
+bgtz pressure1 depressure
+lbn openset logicsw depress On 3
+switch:
+sbn activevent vent On 0
+yield 
+breq openset 0 4
+move vent outervent
+move sensor outersensor
+j repressure
+move vent innervent 
+move sensor innersensor
+repressure:
+yield
+lbn pressure1 sensors airlocksensor Pressure 0
+lbn pressure2 sensors sensor Pressure 0 
+sbn activevent vent PressureExternal pressure2
+sbn activevent vent Mode 0
+sbn activevent vent On 1
+blt pressure1 pressure2 repressure
+sbn activevent vent On 0
+lbn openset logicsw depress On 3
+beq openset 0 start
+open:
+sbn activevent vent On 0
+yield
+sbn hangardoor outer Lock 0
+sbn hangardoor outer Open 1
+wait:
+yield
+lbn openset logicsw depress On 3
+beq openset 1 wait
+beq openset 0 depressure

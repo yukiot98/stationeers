@@ -1,0 +1,89 @@
+define filter HASH("StructureFiltration") # Refers to the basic filtration unit
+define pump -321403609
+define pump2 1310794736
+define return HASH("returnpump")
+move r14 HASH("Filtration N") # Nitrogen
+move r13 HASH("Filtration CO2") # Carbon Dioxide
+move r12 HASH("Filtration N20") # Nitrous Oxide
+move r11 HASH("Filtration O2") # Oxygen
+move r10 HASH("Filtration X") # Pollutant
+move r9 HASH("volfilter") # Volatile
+# Enjoy
+#===================================================
+alias PipeAnalyser d0
+alias rOxygenFilter d1
+alias rCarbonDioxideFilter d2
+alias rNitrogenFilter d3
+alias rPollutantFilter d4
+alias rVolatilesFilter d5
+
+l r14 d3 NameHash
+l r13 d2 NameHash
+l r11 d1 NameHash
+l r10 d4 NameHash
+l r9 d5 NameHash
+start:
+yield 
+l r1 PipeAnalyser Pressure
+ble r1 100 end
+
+sbn pump return On 1
+sbn pump2 return On 1
+l r2 PipeAnalyser TotalMoles
+l r0 d0 RatioOxygen
+mul r0 r0 r2
+sgtz r0 r0 
+lbn r3 filter r11 PressureOutput 1
+slt r4 r3 47000
+sbn filter r11 On r0
+sbn filter r11 Mode 1
+l r0 d0 RatioCarbonDioxide
+mul r0 r0 r2
+sgtz r0 r0 
+lbn r3 filter r13 PressureOutput 1
+slt r4 r3 47000
+sbn filter r13 On r0
+sbn filter r13 Mode 1
+l r0 d0 RatioNitrogen
+mul r0 r0 r2
+sgtz r0 r0 
+lbn r3 filter r14 PressureOutput 1
+slt r4 r3 45000
+sbn filter r14 On r0
+sbn filter r14 Mode 1
+l r0 d0 RatioPollutant
+mul r0 r0 r2
+sgtz r0 r0 
+lbn r3 filter r10 PressureOutput 1
+slt r4 r3 45000
+sbn filter r10 On r0
+sbn filter r10 Mode 1
+l r0 d0 RatioVolatiles
+mul r0 r0 r2
+sgtz r0 r0 
+lbn r4 filter r9 PressureOutput 1
+slt r4 r4 38000
+sbn filter r9 On r0
+sbn filter r9 Mode 1
+l r0 d0 RatioNitrousOxide
+mul r0 r0 r2
+sgtz r0 r0 
+lbn r3 filter r12 PressureOutput 1
+slt r4 r3 45000
+sbn filter r12 On r0
+sbn filter r12 Mode 1
+j start
+end:
+yield
+sbn filter r11 On 0
+sbn filter r13 On 0
+sbn filter r14 On 0
+sbn filter r10 On 0
+sbn filter r9 On 0
+sbn filter r12 On 0
+sleep 5
+sbn pump return On 0
+sbn pump2 return On 0
+l r1 PipeAnalyser Pressure
+bgt r1 3000 start 
+j end

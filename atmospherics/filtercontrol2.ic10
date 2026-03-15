@@ -1,0 +1,125 @@
+
+alias Self db
+alias F6 d0
+alias F7 d1
+alias F8 d2
+alias F9 d3
+alias Dspl1 d4
+alias Dspl2 d5
+alias Fscurr r0
+alias Fsmin r1
+alias FN r2
+alias v1 r3
+alias v2 r4
+alias FC r5
+alias State r6
+alias nm r7
+
+Start:
+
+l State Self Setting
+mod FC State 10
+div State State 10
+floor State State
+
+mod FN State 10
+div State State 10
+floor State State
+move Fsmin State
+
+blt FC 6 Name
+ls v1 F6 0 Quantity
+ls v2 F6 1 Quantity
+add Fscurr v1 v2
+ble Fsmin Fscurr Filter7
+move Fsmin Fscurr
+move FN 6
+blt FC 7 Name
+j Filter7
+
+Filter7:
+ls v1 F7 0 Quantity
+ls v2 F7 1 Quantity
+add Fscurr v1 v2
+ble Fsmin Fscurr Filter8
+move Fsmin Fscurr
+move FN 7
+blt FC 8 Name
+j Filter8
+
+Filter8:
+ls v1 F8 0 Quantity
+ls v2 F8 1 Quantity
+add Fscurr v1 v2
+ble Fsmin Fscurr Filter9
+move Fsmin Fscurr
+move FN 8
+blt FC 9 Name
+j Filter9
+
+Filter9:
+ls v1 F9 0 Quantity
+ls v2 F9 1 Quantity
+add Fscurr v1 v2
+ble Fsmin Fscurr Name
+move Fsmin Fscurr
+move FN 9
+j  Name
+
+Name:
+beq FN 1 Fl1
+beq FN 2 Fl2
+beq FN 3 Fl3
+beq FN 4 Fl4
+beq FN 5 Fl5
+beq FN 6 Fl6
+beq FN 7 Fl7
+beq FN 8 Fl8
+beq FN 9 Fl9
+
+Fl1:
+move nm 1     #Cpecify filter1 caption
+s Dspl1 Color 0  #Cpecify filter1 color
+j Display
+Fl2:
+move nm 2     #Cpecify filter2 caption
+s Dspl1 Color 6  #Cpecify filter2 color
+j Display
+Fl3:
+move nm 3     #Cpecify filter3 caption
+s Dspl1 Color 5  #Cpecify filter3 color
+j Display
+Fl4:
+move nm 4     #Cpecify filter4 caption
+s Dspl1 Color 1  #Cpecify filter4 color
+j Display
+Fl5:
+move nm 5     #Cpecify filter5 caption
+s Dspl1 Color 4  #Cpecify filter5 color
+j Display
+Fl6:
+move nm 6     #Cpecify filter6 caption
+s Dspl1 Color 2  #Cpecify filter6 color
+j Display
+Fl7:
+move nm 7     #Cpecify filter7 caption
+s Dspl1 Color 6  #Cpecify filter7 color
+j Display
+Fl8:
+move nm 8     #Cpecify filter8 caption
+s Dspl1 Color 5  #Cpecify filter8 color
+j Display
+Fl9:
+move nm 9     #Cpecify filter9 caption
+s Dspl1 Color 1  #Cpecify filter9 color
+j Display
+
+Display:
+s Dspl1 Mode 0
+s Dspl1 Setting nm
+s Dspl2 Mode 1
+div Fsmin Fsmin 200
+s Dspl2 Setting Fsmin
+
+yield
+j Start
