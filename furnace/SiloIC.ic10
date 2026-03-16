@@ -28,31 +28,31 @@ mul r4 r4 3
 add r4 r4 1
 jr r4
 SetupIron:
-move r0 HASH("Iron Silo")
+move r0 HASH("ironore")
 j get
 SetupCopper:
-move r0 HASH("Copper Silo")
+move r0 HASH("copperore")
 j get
 SetupGold:
-move r0 HASH("Gold Silo")
+move r0 HASH("goldore")
 j get
 SetupSilicon:
-move r0 HASH("Silicon Silo")
+move r0 HASH("siliconore")
 j get
 SetupSilver:
-move r0 HASH("Silver Silo")
+move r0 HASH("silverore")
 j get
 SetupLead:
-move r0 HASH("Lead Silo")
+move r0 HASH("leadore")
 j get
 SetupNickel:
-move r0 HASH("Nickel Silo")
+move r0 HASH("nickelore")
 j get
 SetupCoal:
-move r0 HASH("Coal Silo")
+move r0 HASH("coal")
 j get
 SetupCobalt:
-move r0 HASH("Cobalt Silo")
+move r0 HASH("cobaltore")
 j get
 GetSteel:
 move r0 HASH("Steel Silo")

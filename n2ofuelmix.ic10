@@ -1,0 +1,90 @@
+#       H2/N2O Volume Pump Gas Mixer
+
+# Uses 2 Volume Pumps instead of a Gas Mixer
+# No need to worry about temperatures throwing...
+#...mix ratios off. -Prevents over pressure.
+# You will need 1 Pipe Analyser and 2 Volume Pumps.
+
+alias H2N20Analyser d0
+alias PumpN20 d1
+alias PumpH2 d2
+
+# ----------Change desired values here-------------
+# Currently set for H2/N2O fuel mix.
+# If you adujst the max tank pressure then you must
+#...modify the the settings below that accordingly.
+
+define N2ORatio 0.50 #Set desired N2O ratio
+define H2Ratio 0.50 #Set desired H2 ratio
+define MaxPres 60 #Set desired tank pressure
+define MaxH2Pres 30 #Keep below MaxPres
+define MinTransPres 28 #Keep below MaxH2Pres
+define MinPres 100 # Set tank minimum pressure
+define PumpHighSetting 10.0 #H2Pump max setting
+#--------------------------------------------------
+
+alias N2O r0 #Ratio
+alias H2 r1 #Ratio
+alias Pres r2 #Pressure
+alias H2PumpSetting r3
+alias CurrentN2OSetting r4
+alias CurrentH2Setting r5
+alias LowH2Setting r6
+
+checkN2O:
+l Pres d0 Pressure
+bgt Pres MaxPres pumpsOFF
+s d0 On 1
+l H2PumpSetting d2 Setting
+mul CurrentN2OSetting H2PumpSetting 0.6
+s d1 Setting CurrentN2OSetting
+l N2O d0 RatioNitrousOxide
+blt N2O N2ORatio n2OPumpON
+bgt N2O N2ORatio n2OPumpOFF
+j checkH2
+
+checkH2:
+l Pres d0 Pressure
+bge Pres MinTransPres setLOW
+blt Pres MinTransPres setHIGH
+resumePresCheck:
+l Pres d0 Pressure
+bge Pres MaxH2Pres h2PumpOFF
+h2RatioCheck:
+l H2 d0 RatioVolatiles
+blt H2 H2Ratio h2PumpON
+bgt H2 H2Ratio h2PumpOFF
+j checkN2O
+
+n2OPumpON:
+s d1 On 1
+j checkH2
+
+n2OPumpOFF:
+s d1 On 0
+j checkH2
+
+h2PumpON:
+s d2 On 1
+j checkN2O
+
+h2PumpOFF:
+s d2 On 0
+l Pres d0 RatioNitrousOxide
+bgt Pres MaxPres pumpsOFF
+j checkN2O
+
+pumpsOFF:
+s d1 On 0
+s d2 On 0
+j checkN2O
+
+setLOW:
+abs CurrentH2Setting PumpHighSetting
+mul LowH2Setting CurrentH2Setting 0.2
+s d2 Setting LowH2Setting
+j resumePresCheck
+
+setHIGH:
+s d2 Setting PumpHighSetting
+j resumePresCheck

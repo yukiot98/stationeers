@@ -38,7 +38,7 @@ blez r0 off
 beqal r1 1 Set
 sub r0 r0 1
 mul r0 r0 3
-sbn -815193061 HASH("Amount") Setting r6
+sbn -2041948072 HASH("Amount") Setting r6
 add r0 r0 1
 brnez r0 r0
 s db Setting -1301215609 #iron

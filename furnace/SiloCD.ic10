@@ -8,31 +8,31 @@ lbn r12 dial HASH("Amount Dial") Setting 2
 lbn r13 -1446063838 HASH("Confirm Button") Setting 2
 lbn r6 -851746783 HASH("Link") Setting 2
 or r13 r13 r6
-lbn r1 Silo HASH("Iron Silo") Quantity 2
+lbn r1 Silo HASH("ironore") Quantity 2
 mul r0 r1 1
 sbn led HASH("Iron Display") Setting r0
-lbn r2 Silo HASH("Copper Silo") Quantity 2
+lbn r2 Silo HASH("copperore") Quantity 2
 mul r0 r2 1
 sbn led HASH("Copper Display") Setting r0
-lbn r3 Silo HASH("Gold Silo") Quantity 2
+lbn r3 Silo HASH("goldore") Quantity 2
 mul r0 r3 1
 sbn led HASH("Gold Display") Setting r0
-lbn r4 Silo HASH("Silicon Silo") Quantity 2
+lbn r4 Silo HASH("siliconore") Quantity 2
 mul r0 r4 1
 sbn led HASH("Silicon Display") Setting r0
-lbn r5 Silo HASH("Silver Silo") Quantity 2
+lbn r5 Silo HASH("silverore") Quantity 2
 mul r0 r5 1
 sbn led HASH("Silver Display") Setting r0
-lbn r6 Silo HASH("Lead Silo") Quantity 2
+lbn r6 Silo HASH("leadore") Quantity 2
 mul r0 r6 1
 sbn led HASH("Lead Display") Setting r0
-lbn r7 Silo HASH("Nickel Silo") Quantity 2
+lbn r7 Silo HASH("nickelore") Quantity 2
 mul r0 r7 1
 sbn led HASH("Nickel Display") Setting r0
-lbn r8 Silo HASH("Coal Silo") Quantity 2
+lbn r8 Silo HASH("coal") Quantity 2
 mul r0 r8 1
 sbn led HASH("Coal Display") Setting r0
-lbn r9 Silo HASH("Cobalt Silo") Quantity 2
+lbn r9 Silo HASH("cobaltore") Quantity 2
 mul r0 r9 1
 sbn led HASH("Cobalt Display") Setting r0
 lbn r10 Silo HASH("Steel Silo") Quantity 2
