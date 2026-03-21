@@ -58,7 +58,7 @@ bgt r15 r14 bypass #bypass buttons if ammount of people in airlock increased
 l r0 outerdoor Setting
 l r1 innerdoor Setting
 lbn r3 491845673 HASH("Outer Door") Setting 3
-beq r3 1 bypass
+beqal r3 1 bypass
 bne r0 r1 waitbutton
 bypass:
 s outerdoor Open 0
@@ -135,4 +135,7 @@ s innerdoor Open safe
 sub r0 3 safe
 s light Color r0
 sbn 797794350 HASH("airlock") On safe
+j ra
+door:
+s outerdoor Setting r3
 j ra
