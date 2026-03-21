@@ -4,17 +4,15 @@ alias airlocksensor d2 #Gas Sensor
 alias diode d3 #Diode Slide (optional)
 alias light d4 #LED
 alias ocupationSensor d5 #Sensor checks if someone is inside the airlock (optional)
-define ACTIVEVENT -1129453144
+define ACTIVEVENT -785498334
 define SENSOR -1252983604
 alias vent r10
 alias sensor r11
 alias safe r12
 define OUTERVENT HASH("Outer Vent") #Vents must be named as per below.
 define INNERVENT HASH("Inner Vent") #Multiple vents can be used.
-#Install sensors outside each side of the airlock
 define OUTERSENSOR HASH("Outer Sensor")
 define INNERSENSOR HASH("Inner Sensor")
-
 restart:
 s outerdoor Mode 1
 s innerdoor Mode 1
@@ -41,7 +39,7 @@ sbn ACTIVEVENT vent PressureExternal r1
 div r2 r0 r1
 brdns diode 2 #makes diode a optional feature
 s diode Setting r2
-lb r9 491845673 Activate Sum #reads in emergency button, will be 0 if no butten exists
+#lb r9 491845673 Activate Sum #reads in emergency button, will be 0 if no butten exists
 bgtz r9 open #breaks repressurisation loop if emergency button was pressed
 blt r0 r1 repressure
 open:
@@ -59,6 +57,8 @@ l r15 ocupationSensor Activate #reads in new value of ocupation sensor
 bgt r15 r14 bypass #bypass buttons if ammount of people in airlock increased
 l r0 outerdoor Setting
 l r1 innerdoor Setting
+lbn r3 491845673 HASH("Outer Door") Setting 3
+beq r3 1 bypass
 bne r0 r1 waitbutton
 bypass:
 s outerdoor Open 0
@@ -78,7 +78,7 @@ lbn r1 SENSOR sensor Pressure Average
 div r2 r0 r1
 brdns diode 2 #makes diode a optional feature
 s diode Setting r2
-lb r9 491845673 Activate Sum #reads in emergency button, will be 0 if no butten exists
+#lb r9 491845673 Activate Sum #reads in emergency button, will be 0 if no butten exists
 bgtz r9 switch #breaks depressurisation loop if emergency button was pressed
 bgtz r0 depressure
 switch:
@@ -90,7 +90,6 @@ alias outerdoor dr0
 seqz r0 r0
 alias innerdoor dr0
 j start
-
 checksensors:
 lbn r0 SENSOR INNERSENSOR Pressure Average
 lbn r1 SENSOR OUTERSENSOR Pressure Average
@@ -135,4 +134,5 @@ and safe safe r0
 s innerdoor Open safe
 sub r0 3 safe
 s light Color r0
+sbn 797794350 HASH("airlock") On safe
 j ra
