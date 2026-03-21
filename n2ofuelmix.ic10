@@ -51,7 +51,7 @@ resumePresCheck:
 l Pres d0 Pressure
 bge Pres MaxH2Pres h2PumpOFF
 h2RatioCheck:
-l H2 d0 RatioVolatiles
+l H2 d0 RatioMethane
 blt H2 H2Ratio h2PumpON
 bgt H2 H2Ratio h2PumpOFF
 j checkN2O

@@ -20,7 +20,7 @@ main:
   l rpm centrifuge Rpm
   l r0 centrifuge RatioOxygenInput
   l r1 centrifuge RatioNitrousOxideInput
-  l r6 centrifuge RatioVolatiles
+  l r6 centrifuge RatioMethane
   # calc maxRPM
   mul r2 r0 2 # O2 * 2
   add r3 r2 r1 # O2 * 2 + N2O : amount of vol needed

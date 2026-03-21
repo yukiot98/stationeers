@@ -99,8 +99,18 @@ lbn r0 SENSOR INNERSENSOR Temperature Average
 lbn r1 SENSOR OUTERSENSOR Temperature Average
 sap r0 r0 r1 0.02
 and safe safe r0
-lbn r0 SENSOR INNERSENSOR RatioVolatiles Average
-lbn r1 SENSOR OUTERSENSOR RatioVolatiles Average
+lbn r0 SENSOR INNERSENSOR RatioMethane Average
+lbn r1 SENSOR OUTERSENSOR RatioMethane Average
+max r0 r0 r1
+slt r0 r0 0.005
+and safe safe r0
+lbn r0 SENSOR INNERSENSOR RatioHydrazine Average
+lbn r1 SENSOR OUTERSENSOR RatioHydrazine Average
+max r0 r0 r1
+slt r0 r0 0.005
+and safe safe r0
+lbn r0 SENSOR INNERSENSOR RatioHydrogen Average
+lbn r1 SENSOR OUTERSENSOR RatioHydrogen Average
 max r0 r0 r1
 slt r0 r0 0.005
 and safe safe r0

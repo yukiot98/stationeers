@@ -58,7 +58,7 @@ lbn r3 filter r10 PressureOutput 1
 slt r4 r3 45000
 sbn filter r10 On r0
 sbn filter r10 Mode 1
-l r0 d0 RatioVolatiles
+l r0 d0 RatioMethane
 mul r0 r0 r2
 sgtz r0 r0 
 lbn r4 filter r9 PressureOutput 1
