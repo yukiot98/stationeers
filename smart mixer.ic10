@@ -1,0 +1,85 @@
+define anal 435685051
+define switch 321604921
+define mix HASH("mixer")
+define outscan HASH("outputscan")
+define in1 HASH("inscan1")
+define in2 HASH("inscan2")
+define in3 HASH("inscan3")
+alias p1 d0
+alias p2 d1
+alias p3 d2
+define set1 200
+define set2 600
+define set3 200
+define maxpress 50
+alias n r11
+alias T r10
+alias P r9
+alias V r0
+alias V1 r5
+alias V2 r6
+alias V3 r7
+define R 8.3144
+alias outmole r1
+alias out r2
+alias outpress r3
+start:
+yield
+lbn r0 switch mix Setting 3
+jal input1
+jal input2
+bdnsal p3 pumps
+jal start
+input1:
+lbn T anal in1 Temperature 3
+lbn P anal in1 Pressure 3
+lbn outmole anal outscan TotalMoles 3
+lbn out anal outscan RatioOxygen 3
+mul outmole outmole out
+sub n set1 out
+push ra
+jal calcV
+move V1 V
+pop ra
+j ra
+input2:
+lbn T anal in2 Temperature 3
+lbn P anal in2 Pressure 3
+lbn outmole anal outscan TotalMoles 3
+lbn out anal outscan RatioOxygen 3
+mul outmole outmole out
+sub n set2 out
+push ra
+jal calcV
+move V2 V
+pop ra
+j ra
+input3:
+lbn T anal in3 Temperature 3
+lbn P anal in3 Pressure 3
+lbn outmole anal outscan TotalMoles 3
+lbn out anal outscan RatioOxygen 3
+mul outmole outmole out
+sub n set3 out
+push ra
+jal calcV
+move V3 V
+pop ra
+j ra
+pumps:
+lbn outpress anal outscan Pressure 3
+sle outpress outpress maxpress
+and r0 r0 outpress
+s p1 Setting V1
+s p2 Setting V2
+s p1 On r0
+s p2 On r0
+brdns p3 2
+s p3 Setting V3
+s p3 On r0
+j ra
+calcV:
+mul V n R
+mul V V T
+div V V P
+j ra
