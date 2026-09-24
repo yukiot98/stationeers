@@ -8,14 +8,14 @@ define in3 HASH("inscan3")
 alias p1 d0
 alias p2 d1
 alias p3 d2
-define set1 200
-define set2 600
-define set3 200
-define maxpress 50
+define set1 200 #set desired moles from input 1
+define set2 600 #set desired moles from input 2
+define set3 200 #set desired moles from input 3
+define maxpress 50000 #max pressure in kpa, failsafe
 alias n r11
 alias T r10
 alias P r9
-alias V r0
+alias V r8
 alias V1 r5
 alias V2 r6
 alias V3 r7
@@ -23,12 +23,15 @@ define R 8.3144
 alias outmole r1
 alias out r2
 alias outpress r3
+#below here find and edit any ratiogas to your desired gas you wish to mix
 start:
 yield
 lbn r0 switch mix Setting 3
 jal input1
 jal input2
 bdnsal p3 pumps
+jal input3
+jal pumps
 jal start
 input1:
 lbn T anal in1 Temperature 3
@@ -74,7 +77,7 @@ s p1 Setting V1
 s p2 Setting V2
 s p1 On r0
 s p2 On r0
-brdns p3 2
+brdns p3 3
 s p3 Setting V3
 s p3 On r0
 j ra
