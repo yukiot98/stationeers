@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "programs": [
+    {
+      "id": "main-program",
+      "path": "smart mixer.ic10",
+      "language": "ic10"
+    }
+  ],
+  "networks": [
+    {
+      "id": "data",
+      "kind": "cable",
+      "cableRole": "data",
+      "channels": {}
+    },
+    {
+      "id": "power",
+      "kind": "cable",
+      "cableRole": "power",
+      "channels": {}
+    },
+    {
+      "id": "mix",
+      "kind": "gas",
+      "channels": {}
+    },
+    {
+      "id": "input1",
+      "kind": "gas",
+      "channels": {}
+    },
+    {
+      "id": "input2",
+      "kind": "gas",
+      "channels": {}
+    }
+  ],
+  "devices": [
+    {
+      "id": "main-ic",
+      "prefab": "StructureCircuitHousing",
+      "name": "Main IC",
+      "connections": {
+        "0": "data",
+        "1": "power"
+      },
+      "fields": {
+        "On": 1,
+        "Power": 1
+      },
+      "programId": "main-program",
+      "slots": {},
+      "ic": {
+        "program": "",
+        "enabled": true,
+        "pins": {
+          "d0": "turbo-volume-pump-gas",
+          "d1": "turbo-volume-pump-gas-2"
+        },
+        "registers": {},
+        "stack": {}
+      }
+    },
+    {
+      "id": "turbo-volume-pump-gas",
+      "prefab": "StructureTurboVolumePump",
+      "name": "pump1",
+      "connections": {
+        "0": "data",
+        "1": "power",
+        "2": "mix",
+        "3": "input1"
+      },
+      "fields": {},
+      "slots": {}
+    },
+    {
+      "id": "turbo-volume-pump-gas-2",
+      "prefab": "StructureTurboVolumePump",
+      "name": "pump2",
+      "connections": {
+        "0": "data",
+        "1": "power",
+        "2": "mix",
+        "3": "input2"
+      },
+      "fields": {},
+      "slots": {}
+    },
+    {
+      "id": "pipe-analyzer",
+      "prefab": "StructurePipeAnalysizer",
+      "name": "outputscan",
+      "connections": {
+        "0": "data"
+      },
+      "fields": {
+        "On": 1,
+        "Power": 1
+      },
+      "slots": {}
+    },
+    {
+      "id": "pipe-analyzer-2",
+      "prefab": "StructurePipeAnalysizer",
+      "name": "inscan1",
+      "connections": {
+        "0": "data"
+      },
+      "fields": {
+        "On": 1,
+        "Power": 1,
+        "Pressure": 5000,
+        "RatioLiquidOxygen": 100,
+        "TotalMoles": 500,
+        "Volume": 600,
+        "Temperature": 275
+      },
+      "slots": {}
+    },
+    {
+      "id": "pipe-analyzer-3",
+      "prefab": "StructurePipeAnalysizer",
+      "name": "inscan2",
+      "connections": {
+        "0": "data"
+      },
+      "fields": {
+        "Pressure": 5000,
+        "Power": 1,
+        "On": 1,
+        "RatioLiquidMethane": 100,
+        "TotalMoles": 500,
+        "Volume": 600,
+        "Temperature": 275
+      },
+      "slots": {}
+    },
+    {
+      "id": "switch",
+      "prefab": "StructureLogicSwitch2",
+      "name": "mixer",
+      "connections": {
+        "0": "data"
+      },
+      "fields": {
+        "Open": 1,
+        "Setting": 1
+      },
+      "slots": {}
+    }
+  ]
+}

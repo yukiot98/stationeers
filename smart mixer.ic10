@@ -29,10 +29,9 @@ yield
 lbn r0 switch mix Setting 3
 jal input1
 jal input2
-bdnsal p3 pumps
+bdns p3 pumps
 jal input3
 jal pumps
-jal start
 input1:
 lbn T anal in1 Temperature 3
 lbn P anal in1 Pressure 3
@@ -49,7 +48,7 @@ input2:
 lbn T anal in2 Temperature 3
 lbn P anal in2 Pressure 3
 lbn outmole anal outscan TotalMoles 3
-lbn out anal outscan RatioOxygen 3
+lbn out anal outscan RatioMethane 3
 mul outmole outmole out
 sub n set2 out
 push ra
@@ -80,7 +79,7 @@ s p2 On r0
 brdns p3 3
 s p3 Setting V3
 s p3 On r0
-j ra
+j start
 calcV:
 mul V n R
 mul V V T
