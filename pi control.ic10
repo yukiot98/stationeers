@@ -1,0 +1,29 @@
+alias sensor d0
+alias pump d2
+alias meme d3
+alias memi d4
+
+define setpoint 30000
+define kp 0.01
+define ki 0.05
+alias error r10
+alias input r11
+alias integral r12
+
+reset:
+move integral 0
+
+start:
+yield 
+l r0 sensor Pressure
+sub error setpoint r0
+#s meme Setting error
+mul input error kp
+add integral integral error
+max integral integral 0
+min integral integral 3000
+#s memi Setting integral
+mul r0 integral ki
+add input input r0
+s pump Setting input
+j start

@@ -1,0 +1,108 @@
+define filter -348054045
+define pump -321403609
+define pump2 1310794736
+define return HASH("returnpump")
+define ana 435685051
+alias inputana d0
+alias pressin r0
+alias tpress r1
+alias filth r2
+alias gass r3
+alias filtn r4
+alias tankn r5
+alias set1 r6
+alias set2 r7
+alias gasn r8
+alias filtt r9
+start:
+yield 
+l pressin inputana Pressure
+ble pressin 1000 end
+sbn pump return On 1
+sbn pump2 return On 1
+
+move tankn HASH("")
+move filtn HASH("")
+jal filtercheck
+
+j start
+
+filtercheck:
+lbns filtt filter filtn 0 OccupantHash 3
+beqal filter -721824748 loadOxy
+beqal filter -1067319543 loadOxy
+beqal filter -1217998945 loadOxy
+beqal filter -1055451111 loadOxy
+beqal filter 1635000764 loadCO2
+beqal filter 416897318 loadCO2
+beqal filter 1876847024 loadCO2
+beqal filter -185568964 loadCO2
+beqal filter 1915566057 loadPol
+beqal filter 63677771 loadPol
+beqal filter 1959564765 loadPol
+beqal filter -503738105 loadPol
+beqal filter 632853248 loadN
+beqal filter -632657357 loadN
+beqal filter -1387439451 loadN
+beqal filter 152751131 loadN
+beqal filter 15011598 loadmeth
+beqal filter 1037507240 loadmeth
+beqal filter 1255156286 loadmeth
+beqal filter -1916176068 loadmeth
+beqal filter -1247674305 loadNO
+beqal filter 1824284061 loadNO
+beqal filter 465267979 loadNO
+
+j ra
+
+end:
+yield
+sb filter On 0
+sleep 10
+sbn pump return On 0
+sbn pump2 return On 0
+yield
+l pressin inputana Pressure
+bgt pressin 3000 start
+jr -3
+
+hashlookup:
+loadOxy:
+l ratio db RatioOxygenInput
+j ra
+loadCO2:
+l ratio db RatioCarbonDioxideInput
+j ra
+loadPol:
+l ratio db RatioPollutantInput
+j ra
+loadN:
+l ratio db RatioNitrogenInput
+j ra
+loadmeth:
+l ratio db RatioMethaneInput
+j ra
+loadNO:
+l ratio db RatioNitrousOxideInput
+j ra
+loadh2:
+l 
+s dr8 Pressure r1 
+sqrt
+air intake active
+drain
+recycletank ana
+filtration in volume
+filtration line ana
+digital valve shutdown
+ice drain turbo
+n2 filter
+n2return
+o2 filter
+o2return
+co2 filter
+co2return
+methane filter
+methreturn
+h2 filter
+h2 return

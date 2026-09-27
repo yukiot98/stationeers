@@ -1,6 +1,9 @@
 {
     "Lua.workspace.library": [
         "c:\\Users\\emily\\.vscode\\extensions\\shaneyu.stationeers-0.5.2-win32-x64\\assets\\lua\\stationeers-v1",
-        "c:\\Users\\emily\\.vscode\\extensions\\shaneyu.stationeers-0.5.2-win32-x64\\assets\\lua\\stationeers-v1\\stationeerslua-0.2.3"
-    ]
+        "c:\\Users\\emily\\.vscode\\extensions\\shaneyu.stationeers-0.5.2-win32-x64\\assets\\lua\\stationeers-v1\\stationeerslua-0.2.3",
+        "c:\\Users\\emily\\.vscode\\extensions\\shaneyu.stationeers-0.5.2-win32-x64\\assets\\lua\\stationeers-toolkit",
+        "c:\\Users\\emily\\.vscode\\extensions\\orbitalfoundrymoddingcrew.stationeers-lua-0.3.0\\library"
+    ],
+    "ic10.diagnostics.unused": "off"
 }
