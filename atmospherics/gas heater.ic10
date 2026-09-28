@@ -1,0 +1,45 @@
+alias fuel d0
+alias sense d1
+alias ignite d2
+alias drainco d3
+alias drainpo d4
+
+define tempset 1200
+define pressset 20000
+define maxpress 35000
+define kp 0.5
+
+alias press r0
+alias temp r1
+alias flameout r2
+alias exhaust r3
+alias state r4
+alias active r5
+start:
+yield
+l flameout sense Combustion
+beq flameout 0 prime
+l press sense Pressure
+sub state pressset press
+mul state state kp
+sgtz active state
+slt press press maxpress
+and active active press
+s fuel On active
+s fuel Setting state
+l temp sense Temperature
+slt exhaust temp tempset
+s drainco On exhaust
+s drainpo On exhaust
+j start
+prime:
+yield
+s fuel On 1
+sleep 1
+s fuel On 0
+s ignite Activate 1
+yield
+s ignite Activate 0
+l flameout sense Combustion
+beq flameout 0 prime
+beq flameout 1 start
